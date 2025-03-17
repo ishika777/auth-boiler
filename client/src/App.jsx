@@ -84,7 +84,7 @@ const appRouter = createBrowserRouter([
 
 function App() {
 
-    const {isCheckingAuth} = useSelector(state => state.user);
+    const {isCheckingAuth, user} = useSelector(state => state.user);
     const dispatch = useDispatch();
     
     useEffect(() => {
@@ -93,6 +93,9 @@ function App() {
     }, [checkAuthentication])
 
     if(isCheckingAuth){
+        return <Loading />
+    }
+    if(!user){
         return <Loading />
     }
 
