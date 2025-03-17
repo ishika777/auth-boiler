@@ -1,82 +1,95 @@
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Loader2, Mail, Moon, Sun } from 'lucide-react'
+import { Label } from '@/components/ui/label'
+import { Loader2, Mail } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { toast } from "sonner"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useState } from 'react'
 import { forgotPassword } from '@/actions/user-actions'
-import ThemeButton from "@/components/shared/ThemeButton";
+import ThemeButton from "@/components/shared/ThemeButton"
 import { useDispatch, useSelector } from 'react-redux'
 
-
-
 const ForgotPassword = () => {
-
     const [email, setEmail] = useState("")
-    const {loading} = useSelector((state) => state.user);
-
-    const dispatch = useDispatch();
+    const { loading } = useSelector((state) => state.user)
+    const dispatch = useDispatch()
     
-    // const {forgotPassword} = useUserStore()
-
-    const submitHnadler = async(e) => {
-        e.preventDefault();
+    const submitHandler = async(e) => {
+        e.preventDefault()
         if(!email){
             toast.error("Enter email-id")
-            return;
+            return
         }
         try {
-            await forgotPassword(dispatch, email);
-            setEmail("");
+            await forgotPassword(dispatch, email)
+            setEmail("")
         } catch (error) {
             console.log(error)
         }
     }
 
-  return (
-    <div className='flex items-center justify-center   w-full h-full'>
-            <ThemeButton />
-        <form onSubmit={submitHnadler} className='flex flex-col gap-5 border border-gray-300 p-8 min-w-[400px] rounded-lg mx-4'>
-            <div className='text-center'>
-                <h1 className='font-extrabold text-2xl mb-2'>Forgot Password</h1>
-                <p className='text-sm text-gray-600'>Enter your email address to reset your password</p>
-
+    return (
+        <div className="flex flex-col items-center justify-center min-h-screen p-4">
+            <div className="absolute top-4 right-4">
+                <ThemeButton />
             </div>
-            <div className="relative">
-                <Input 
-                required
-                type='text'
-                value={email}
-                name='email'
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder='Enter you email'
-                  className="pl-11 focus-visible:ring-1"
-                />
-                 <Mail className="absolute inset-y-2 left-2 text-gray-500 pointer-events-none" />
-            </div>
+            
+            <Card className="w-full min-w-[400px] border-gray-200 dark:border-gray-700 shadow-lg dark:shadow-gray-800/20">
+                <CardHeader className="space-y-1">
+                    <CardTitle className="text-2xl font-bold text-center">
+                        Forgot Password
+                    </CardTitle>
+                    <CardDescription className="text-center">
+                        Enter your email address to reset your password
+                    </CardDescription>
+                </CardHeader>
+                
+                <CardContent>
+                    <form onSubmit={submitHandler} className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="email">Email</Label>
+                            <div className="relative">
+                                <Input 
+                                    id="email"
+                                    required
+                                    type="email"
+                                    value={email}
+                                    name="email"
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="email@example.com"
+                                    className="pl-10"
+                                />
+                                <Mail className="absolute left-3 top-2 h-5 w-5 text-gray-400 dark:text-gray-500" />
+                            </div>
+                        </div>
 
-            <div>
-          {loading ? (
-            <Button disabled className="w-full bg-red-500 hover:bg-red-600">
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait
-            </Button>
-          ) : (
-            <Button
-              type="submit"
-              className="w-full bg-red-500 hover:bg-red-600"
-            >
-              Send Reset Link
-            </Button>
-          )}
-          <div className="mt-3 text-center">
-            Back to{" "}
-          <Link to="/login" className='text-blue-500 hover:underline'>Login</Link>
-          </div>
+                        <Button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full bg-red-500 hover:bg-red-600 text-white font-medium"
+                        >
+                            {loading ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Sending reset link...
+                                </>
+                            ) : (
+                                "Send Reset Link"
+                            )}
+                        </Button>
+                        
+                        <div className="text-center text-sm mt-4">
+                            Remember your password?{" "}
+                            <Link to="/login" className="text-red-500 hover:text-red-600 font-medium">
+                                Back to Login
+                            </Link>
+                        </div>
+                    </form>
+                </CardContent>
+            </Card>
         </div>
-        </form>
-    </div>
-  )
+    )
 }
 
 export default ForgotPassword

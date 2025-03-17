@@ -1,26 +1,22 @@
 import { login } from "@/actions/user-actions";
 import ThemeButton from "@/components/shared/ThemeButton";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
-import { Eye, EyeOff, Loader2, LockKeyhole, Mail, Moon, Sun } from "lucide-react";
+import { Eye, EyeOff, Loader2, LockKeyhole, Mail } from "lucide-react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 
-
-
 const Login = () => {
-
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const {loading} = useSelector((state) => state.user);
+    const { loading } = useSelector((state) => state.user);
 
-
-    const [errors, setErrors] = useState({})
+    const [errors, setErrors] = useState({});
     const [seePassword, setSeePassword] = useState(false);
     const [input, setInput] = useState({
         email: "",
@@ -30,19 +26,26 @@ const Login = () => {
 
     const handleRadioChange = (value) => {
         setInput((prev) => ({ ...prev, admin: value }));
+        if (errors.admin) {
+            setErrors({ ...errors, admin: undefined });
+        }
     };
 
-    const changEventHandler = (e) => {
+    const changeEventHandler = (e) => {
         const { name, value } = e.target;
         setInput({ ...input, [name]: value });
+        // Clear error for this field when user types
+        if (errors[name]) {
+            setErrors({ ...errors, [name]: undefined });
+        }
     };
 
     const loginSubmitHandler = async (e) => {
         e.preventDefault();
         try {
             const success = await login(dispatch, input);
-            if(success){
-                navigate("/")
+            if (success) {
+                navigate("/");
             }
         } catch (err) {
             console.log(err);
@@ -50,101 +53,125 @@ const Login = () => {
     };
 
     return (
-        <div className="flex items-center justify-center w-full h-full">
-            <ThemeButton />
-            <form
-                onSubmit={loginSubmitHandler}
-                className="p-8  min-w-[400px] rounded-lg border border-gray-300 mx-4"
-            >
-                <div className="mb-4">
-                    <h1 className="font-bold text-2xl">HackHeist</h1>
-                </div>
-
-                <div className="mb-4">
-                    <div className="relative">
-                        <Mail className="absolute inset-y-2 left-2 text-gray-500 pointer-events-none" />
-                        <Input
-                        required
-                            type="email"
-                            placeholder="email@example.com"
-                            name="email"
-                            value={input.email}
-                            onChange={changEventHandler}
-                            className="pl-11 focus-visible:ring-1"
-                        />
-                        {
-                            errors && <span className="text-xs text-red-500">{errors.email}</span>
-                        }
-                    </div>
-                </div>
-
-                <div className="mb-4">
-                    <div className="relative">
-                        <LockKeyhole className="absolute inset-y-2 left-2 text-gray-500 pointer-events-none" />
-                        <Input
-                        required
-                            type={seePassword ? "text" : "password"}
-                            placeholder="Password"
-                            name="password"
-                            value={input.password}
-                            onChange={changEventHandler}
-                            className="pl-11 focus-visible:ring-1 pr-11"
-                        />
-                        {
-                            seePassword ? (
-                                <Eye size={18} onClick={() => setSeePassword(!seePassword)} className="absolute inset-y-2 right-2 top-3 text-gray-500" />
-                            ) : (
-
-                                <EyeOff size={18} onClick={() => setSeePassword(!seePassword)} className="absolute inset-y-2 right-2 top-3 text-gray-500" />
-                            )
-                        }
-                        {
-                            errors && <span className="text-xs text-red-500">{errors.password}</span>
-                        }
-                    </div>
-                </div>
-
-                <RadioGroup defaultValue={input.admin} name="admin" onValueChange={handleRadioChange}>
-                    <div className="flex items-center mb-6 gap-6">
-                        <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="false" id="r1"  />
-                            <Label htmlFor="r1">User</Label>
+        <div className="flex flex-col items-center justify-center min-h-screen p-4">
+            <div className="absolute top-4 right-4">
+                <ThemeButton />
+            </div>
+            
+            <Card className="w-full min-w-[400px] border-gray-200 dark:border-gray-700 shadow-lg dark:shadow-gray-800/20">
+                <CardHeader className="space-y-1">
+                    <CardTitle className="text-2xl font-bold text-center">
+                        <span className="text-red-500">Skill</span>Sort
+                    </CardTitle>
+                    <CardDescription className="text-center">
+                        Sign in to your account
+                    </CardDescription>
+                </CardHeader>
+                
+                <CardContent>
+                    <form onSubmit={loginSubmitHandler} className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="email">Email</Label>
+                            <div className="relative">
+                                <Input
+                                    id="email"
+                                    required
+                                    type="email"
+                                    placeholder="email@example.com"
+                                    name="email"
+                                    value={input.email}
+                                    onChange={changeEventHandler}
+                                    className={`pl-10 ${errors.email ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
+                                />
+                                <Mail className="absolute left-3 top-2 h-5 w-5 text-gray-400 dark:text-gray-500" />
+                                {errors.email && (
+                                    <p className="text-xs text-red-500 mt-1">{errors.email}</p>
+                                )}
+                            </div>
                         </div>
-                        <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="true" id="r2" />
-                            <Label htmlFor="r2">Admin</Label>
-                        </div>
-                    </div>
-                </RadioGroup>
 
-                <div>
-                    {loading ? (
-                        <Button disabled className="w-full bg-red-500 hover:bg-red-600">
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait
-                        </Button>
-                    ) : (
+                        <div className="space-y-2">
+                            <Label htmlFor="password">Password</Label>
+                            <div className="relative">
+                                <Input
+                                    id="password"
+                                    required
+                                    type={seePassword ? "text" : "password"}
+                                    placeholder="••••••••"
+                                    name="password"
+                                    value={input.password}
+                                    onChange={changeEventHandler}
+                                    className={`pl-10 ${errors.password ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
+                                />
+                                <LockKeyhole className="absolute left-3 top-2 h-5 w-5 text-gray-400 dark:text-gray-500" />
+                                <button
+                                    type="button"
+                                    onClick={() => setSeePassword(!seePassword)}
+                                    className="absolute right-3 top-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+                                >
+                                    {seePassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                </button>
+                                {errors.password && (
+                                    <p className="text-xs text-red-500 mt-1">{errors.password}</p>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label>Account Type</Label>
+                            <RadioGroup 
+                                value={input.admin} 
+                                onValueChange={handleRadioChange}
+                                className="flex space-x-6"
+                            >
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="false" id="user" />
+                                    <Label htmlFor="user" className="cursor-pointer">User</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="true" id="admin" />
+                                    <Label htmlFor="admin" className="cursor-pointer">Admin</Label>
+                                </div>
+                            </RadioGroup>
+                            {errors.admin && (
+                                <p className="text-xs text-red-500 mt-1">{errors.admin}</p>
+                            )}
+                        </div>
+
                         <Button
                             type="submit"
-                            className="w-full bg-red-500  hover:bg-red-600"
+                            disabled={loading}
+                            className="w-full bg-red-500 hover:bg-red-600 text-white font-medium"
                         >
-                            Login
+                            {loading ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Signing in...
+                                </>
+                            ) : (
+                                "Sign in"
+                            )}
                         </Button>
-                    )}
-                </div>
-
-                <div className="mt-4 text-center">
-                    <Link to="/forgot-password" className="text-blue-500 hover:underline">
-                        Forgot Password
-                    </Link>
-                </div>
-                <Separator className="my-4" />
-                <p className="mt-2 text-center">
-                    Don't have an account?{" "}
-                    <Link to="/signup" className="text-blue-500 hover:underline">
-                        Signup
-                    </Link>
-                </p>
-            </form>
+                        
+                        <div className="text-center text-sm">
+                            <Link to="/forgot-password" className="text-red-500 hover:text-red-600 font-medium">
+                                Forgot password?
+                            </Link>
+                        </div>
+                        
+                        <div className="relative my-4">
+                            <Separator className="my-4" />
+                        </div>
+                        
+                        <div className="text-center text-sm">
+                            Don't have an account?{" "}
+                            <Link to="/signup" className="text-red-500 hover:text-red-600 font-medium">
+                                Create account
+                            </Link>
+                        </div>
+                    </form>
+                </CardContent>
+            </Card>
         </div>
     );
 };

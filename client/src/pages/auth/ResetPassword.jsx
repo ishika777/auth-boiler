@@ -7,6 +7,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { resetPassword } from '@/actions/user-actions'
 import ThemeButton from "@/components/shared/ThemeButton";
 import { useDispatch, useSelector } from 'react-redux'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label'
+
 
 
 const ResetPassword = () => {
@@ -19,12 +22,17 @@ const ResetPassword = () => {
     
     const [newPassword, setNewPassword] = useState("");
     const {loading} = useSelector((state) => state.user);
+    const [error, setError] = useState("");
 
     const [seePassword, setSeePassword] = useState(false);
 
 
     const submitHandaler = async(e) => {
         e.preventDefault();
+        if (newPassword.length < 6) {
+            setError("Password must be at least 6 characters");
+            return;
+        }
         try {
             const res = await resetPassword(dispatch, resetToken, newPassword);
             if(res){
@@ -38,56 +46,77 @@ const ResetPassword = () => {
     }
 
     return (
-        <div className='flex items-center justify-center   w-full h-full'>
-            <ThemeButton />
-            <form onSubmit={submitHandaler} className='flex flex-col gap-5 border border-gray-300 p-8 min-w-[400px]  rounded-lg mx-4'>
-                <div className='text-center'>
-                    <h1 className='font-extrabold text-center text-2xl mb-2'>Reset Password</h1>
-                    <p className='text-sm text-gray-600'>Enter your new password</p>
 
-                </div>
+        <div className="flex flex-col items-center justify-center min-h-screen">
+    <div className="absolute top-4 right-4">
+        <ThemeButton />
+    </div>
+
+    <Card className="w-full min-w-[400px] border-gray-200 dark:border-gray-700 shadow-lg dark:shadow-gray-800/20">
+        <CardHeader>
+            <CardTitle className="text-2xl font-bold text-center">
+                <span className="text-red-500">Skill</span>Sort
+            </CardTitle>
+            <CardDescription className="text-center">
+                Enter your new password to reset your account
+            </CardDescription>
+        </CardHeader>
+
+        <CardContent>
+            <form onSubmit={submitHandaler} className="space-y-5">
                 <div className="relative">
-                <LockKeyhole className="absolute inset-y-2 left-2 text-gray-500 pointer-events-none" />
 
                     <Input
+                        id="password"
                         required
                         type={seePassword ? "text" : "password"}
+                        placeholder="••••••••"
+                        name="password"
                         value={newPassword}
-                        name='email'
                         onChange={(e) => setNewPassword(e.target.value)}
-                        placeholder='Enter you new password'
-                        className="pl-11 focus-visible:ring-1 pr-11"
+                        className={`pl-10`}
                     />
-                    {
-                        seePassword ? (
-                                <Eye size={18} onClick={() => setSeePassword(!seePassword)} className="absolute inset-y-2 right-2 top-3 text-gray-500" />
-                        ) : (
-                            
-                                <EyeOff size={18} onClick={() => setSeePassword(!seePassword)} className="absolute inset-y-2 right-2 top-3 text-gray-500" />
-                        )
-                    }
+                    <LockKeyhole className="absolute left-3 top-2 h-5 w-5 text-gray-400 dark:text-gray-500" />
+                    <button
+                        type="button"
+                        onClick={() => setSeePassword(!seePassword)}
+                        className="absolute right-3 top-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+                    >
+                        {seePassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
                 </div>
+                {
+                    error && (<p className="text-xs text-red-500 mt-1">{error}</p>)
+                }
 
-                <div>
+                <Button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-red-500 hover:bg-red-600 text-white font-medium"
+                >
                     {loading ? (
-                        <Button disabled className="w-full bg-red-500 hover:bg-red-600">
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait
-                        </Button>
+                        <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Resetting Password...
+                        </>
                     ) : (
-                        <Button
-                            type="submit"
-                            className="w-full bg-red-500 hover:bg-red-600"
-                        >
-                            Reset
-                        </Button>
+                        "Reset Password"
                     )}
-                    <div className="mt-3 text-center">
-                        Back to{" "}
-                        <Link to="/login" className='text-blue-500 hover:underline'>Login</Link>
-                    </div>
+                </Button>
+
+                <div className="text-center text-sm">
+                    Back to{" "}
+                    <Link to="/login" className="text-red-500 hover:text-red-600 font-medium">
+                        Login
+                    </Link>
                 </div>
             </form>
-        </div>
+        </CardContent>
+    </Card>
+</div>
+
+
+       
     )
 }
 
