@@ -88,15 +88,18 @@ function App() {
     const dispatch = useDispatch();
     
     useEffect(() => {
-        checkAuthentication(dispatch)
+        checkAuthentication(dispatch);
         initializeTheme()
-    }, [checkAuthentication])
+    }, [dispatch]);
 
-    if(isCheckingAuth){
-        return <Loading />
-    }
-    if(!user){
-        return <Loading />
+    useEffect(() => {
+        if (!isCheckingAuth && !user) {
+            <Navigate to="/login" replace />
+        }
+    }, [isCheckingAuth, user]);
+
+    if (isCheckingAuth) {
+        return <Loading />;
     }
 
 
