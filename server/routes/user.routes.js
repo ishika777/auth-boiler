@@ -1,7 +1,7 @@
 const express= require("express")
 const router = express.Router()
 
-const { checkAuth, signup, login, logout, verifyEmail, forgotPassword, resetpassword } = require("../controllers/user.controller")
+const { checkAuth, signup, login, logout, verifyEmail, forgotPassword, resetpassword, sendVerificationCode } = require("../controllers/user.controller")
 const { isAuthenticated } = require("../middlewares/isAuthenticated") 
 
 
@@ -11,6 +11,7 @@ router.route("/signup").post(signup)
 router.route("/login").post(login)
 router.route("/logout").post(logout)
 router.route("/verify-email").post(verifyEmail)
+router.route("/send-code").post(sendVerificationCode)
 router.route("/forgot-password").post(forgotPassword)
 router.route("/reset-password/:resetToken").post(resetpassword)
 

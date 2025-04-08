@@ -96,6 +96,38 @@ module.exports.login = async(req, res) => {
     }
 }
 
+module.exports.sendVerificationCode = async(req, res) => {
+    try {
+        const {email} = req.body;
+        const user = await User.findOne({email})
+        if(!user){
+            return res.status(400).json({
+                success : false,
+                message : "Incorrect email"
+            });
+        }
+        if(user.isVerified){
+            return res.status(400).json({
+                success : false,
+                message : "Email already verified"
+            });
+        }
+
+        const verificationCode= generateVerificationCode(6)
+        await sendVerificationEmail(email, verificationCode)
+        user.verificationCode = verificationCode;
+        user.verificationCodeExpiresAt = Date.now()+24*60*60*1000 //1day
+        await user.save()
+        return res.status(200).json({
+            success : true,
+            message : "Verification code sent to your email",
+        });
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({message : "Internal Server Error"});
+    }
+}
+
 module.exports.verifyEmail = async(req, res) => {
     //verify code sent to email
     try {
