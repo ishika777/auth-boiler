@@ -66,6 +66,32 @@ export const login = async (dispatch, input) => {
     return false;
 }
 
+export const sendCode = async (dispatch, email) => {
+    try {
+        dispatch(setLoading(true))
+
+        const response = await axios.post(
+            `${USER_API_END_POINT}/send-code`,
+            { email },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        if (response.data.success) {
+            toast.success(response.data.message);
+            return true;
+        }
+    } catch (error) {
+        console.log(error);
+        toast.error(error.response?.data.message || error.message);
+    } finally{
+        dispatch(setLoading(false))
+    }
+    return false;
+}
+
 export const verifyEmail = async (dispatch, verificationCode) => {
     try {
         dispatch(setLoading(true))

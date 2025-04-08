@@ -158,6 +158,11 @@ const Login = () => {
                                 Forgot password?
                             </Link>
                         </div>
+                        <div className="text-center text-sm">
+                            <Link to="/verify-email" className="text-red-500 hover:text-red-600 font-medium">
+                                Verify Email
+                            </Link>
+                        </div>
                         
                         <div className="relative my-4">
                             <Separator className="my-4" />

@@ -13,6 +13,7 @@ import { checkAuthentication } from "./actions/user-actions"
 import { initializeTheme } from "./store/themeSlice"
 import Loading from "./components/shared/Loading"
 import { useEffect } from "react"
+import VerifyEmailManually from "./pages/auth/VerifyEmailManually"
 
 const ProtectedRoutes = ({children}) => {
     const {isAuthenticated, user} = useSelector(state => state.user);
@@ -78,6 +79,10 @@ const appRouter = createBrowserRouter([
     {
         path : "/verify-email",
         element : <AuthenticatedUser><VerifyEmail /></AuthenticatedUser>,
+    },
+    {
+        path : "/verify-manual",
+        element : <AuthenticatedUser><VerifyEmailManually /></AuthenticatedUser>,
     },
     
 ])
